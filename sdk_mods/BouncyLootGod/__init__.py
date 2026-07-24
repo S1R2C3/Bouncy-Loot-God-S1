@@ -63,7 +63,8 @@ from BouncyLootGod.enemies import enemy_class_to_loc_name, oid_generic_drop_chan
 from BouncyLootGod.vending import vending_machine_position_to_name, use_vending_machine
 from BouncyLootGod.archi_data import item_name_to_id, item_id_to_name, loc_name_to_id
 from BouncyLootGod.missions import grant_mission_reward, mission_ue_str_to_name, move_southern_shelf_blocked_missions
-from BouncyLootGod.travel import can_travel_to_region, get_travel_req_string, get_newly_unlocked_region_name, get_entrance_lock_warnings, get_translated_map_name
+from BouncyLootGod.travel import can_travel_to_region, get_travel_req_string, get_newly_unlocked_region_name, \
+    get_entrance_lock_warnings, get_translated_map_name, get_available_travels, oid_custom_fast_travel
 from BouncyLootGod.map_modify import place_mesh_object, setup_generic_mob_drops
 from BouncyLootGod.traps import trigger_spawn_trap, init_traps, trigger_trap
 from BouncyLootGod.rarity import get_gear_item_id, get_gear_loc_id, can_gear_item_id_be_equipped, can_inv_item_be_equipped, get_gear_kind, needs_rarity_check
@@ -942,13 +943,13 @@ def duck_pressed(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func: unr
 
     # gameinfo = unrealsdk.find_all("WillowCoopGameInfo")[-1]
     # gameinfo.TravelToStation(unrealsdk.find_object("FastTravelStationDefinition", "GD_FastTravelStations.Zone2.Grass_A"))
-    # loc = get_loc_in_front_of_player(100, -80)
+    # loc = get_loc_in_front_of_player(100, -50)
     # print(loc)
     # place_mesh_object(
-    #     loc.X, loc.Y, loc.Z,
-    #     "Orchid_OasisTown_P.TheWorld:PersistentLevel.StaticMeshCollectionActor_99",
-    #     "Prop_Bones.Meshes.SkagBone_06",
-    #     -7000, 0, -0
+    #     -8283, -2775, -2438,
+    #     "Orchid_Caves_P.TheWorld:PersistentLevel.StaticMeshCollectionActor_9",
+    #     "Prop_Furniture.Chair",
+    #     0, 0, 14000
     # )
     blg = get_globals()
     if not blg.has_item("Crouch"):
@@ -1195,13 +1196,7 @@ def test_btn(ButtonInfo):
     print(blg.locations_checked)
     print("\nsettings")
     print(blg.settings)
-    print("\nfilepaths")
     show_chat_message("is_archi_connected: " + str(blg.is_archi_connected) + " is_sock_connected: " + str(blg.is_sock_connected))
-
-    # dist = 0
-    # for pool_name in gear_kinds.keys():
-    #     spawn_gear(pool_name, dist, dist)
-    #     dist += 50
 
     # get_pc().ExpEarn(1000, 0)
     # get_pc().PlayerReplicationInfo.SetCurrencyOnHand(0, 999999)
@@ -1825,6 +1820,32 @@ def show_travel_message(obj: unreal.UObject, args: unreal.WrappedStruct, ret, fu
     if args.StationDefinition.Name == "CraterToKickedOut":
         show_chat_message("If you can't jump to the exit, use the chat command \"travel Badass Crater\"")
 
+@hook("Engine.WillowInventory:GetInventorySpaceRequirement")
+def block_space_requirement(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func: unreal.BoundFunction):
+    blg = get_globals()
+    if blg.has_item("Infinite Backpack") or blg.has_item("Backpack Upgrade", 10):
+        return Block, 0
+
+@hook("WillowGame.FastTravelStationGFxMovie:BuildLocationData", Type.POST)
+def build_location_data(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func: unreal.BoundFunction):
+    travel_dests = get_available_travels()
+    if len(travel_dests) > 0:
+        obj.LocationIsHeader.append(True)
+        obj.LocationDisplayNames.append("AP Travel")
+        obj.LocationDisplayNamesAlphabetical.append("AP Travel")
+        for dest in travel_dests:
+            obj.LocationIsHeader.append(False)
+            obj.LocationDisplayNames.append(" - "  + dest)
+            obj.LocationDisplayNamesAlphabetical.append(" - " + dest)
+
+@hook("WillowGame.FastTravelStationGFxMovie:extActivate")
+def activate_ft(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func: unreal.BoundFunction):
+    map_name = obj.LocationDisplayNames[args.LocationIndex]
+
+    if map_name.startswith(" - "):
+        map_name = map_name[3:]
+        gameinfo = unrealsdk.find_all("WillowCoopGameInfo")[-1]
+        gameinfo.TravelToStation(unrealsdk.find_object("Object", travel_targets[map_name]))
 
 mod_instance = build_mod(
     options=[
@@ -1832,6 +1853,7 @@ mod_instance = build_mod(
         oid_print_items_received,
         oid_test_btn,
         oid_collision,
+        oid_custom_fast_travel,
         oid_resend_all,
         oid_resend_last_3,
         oid_jump_z_override,
@@ -1843,6 +1865,8 @@ mod_instance = build_mod(
     on_enable=on_enable,
     on_disable=on_disable,
     hooks=[
+        build_location_data,
+        activate_ft,
         add_inventory,
         post_add_inventory,
         on_equipped,
@@ -1888,6 +1912,7 @@ mod_instance = build_mod(
         show_travel_message,
         set_always_on_level,
         update_objective,
+        block_space_requirement,
     ]
 )
 
