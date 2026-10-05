@@ -69,6 +69,7 @@ class GearLicenses(Choice):
     alias_remove_all = 0
     alias_off = 0
     alias_false = 0
+    alias_none = 0
     option_exclude_seraph_plus = 1
     option_exclude_pearl_plus = 2
     option_exclude_rainbow = 3
@@ -88,6 +89,7 @@ class ReceiveGearItems(Choice):
     display_name = "Gear Receive Type"
     option_equip_only = 0
     alias_off = 0
+    alias_none = 0
     alias_false = 0
     alias_equip = 0
     alias_dont_receive = 0
@@ -415,6 +417,7 @@ class GenericMobChecks(Choice):
     display_name = "Generic Mob Checks"
     option_disabled = 0
     alias_off = 0
+    alias_none = 0
     alias_false = 0
     alias_remove = 0
     alias_remove_all = 0
@@ -446,6 +449,7 @@ class GearRarityChecks(Choice):
     alias_remove_all = 0
     alias_off = 0
     alias_false = 0
+    alias_none = 0
     option_exclude_seraph_plus = 1
     option_exclude_pearl_plus = 2
     option_exclude_rainbow = 3

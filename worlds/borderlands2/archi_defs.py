@@ -685,7 +685,7 @@ quest_data_table = {
     "Kickstart My Heart":                                   BL2ArchiData("Forge", 15, other_req_regions=["BadassCraterBar"], req_rules=["Quest: Battle: Twelve O' Clock High", "Ranged Combat"], is_non_gear_reward=True, tags=["story", "unlocked_remove"]),
     "Commercial Appeal":                                    BL2ArchiData("Forge", 15, req_items=["License: Rare Shotgun"], req_rules=["Quest: Kickstart My Heart"]),
     "Long Way To The Top":                                  BL2ArchiData("TorgueArena", 15, other_req_regions=["BadassCraterBar"], req_rules=["Quest: Kickstart My Heart"], is_non_gear_reward=True, jump_z_req=546, req_items=["Crouch"], tags=["story"]),
-    "Tier 2 Battle: Appetite for Destruction":              BL2ArchiData("TorgueArena", 30, other_req_regions=["BadassCrater"], is_non_gear_reward=True, req_rules=["Quest: Long Way To The Top"]),
+    "Tier 2 Battle: Appetite for Destruction":              BL2ArchiData("TorgueArena", 30, is_non_gear_reward=True, req_rules=["Quest: Long Way To The Top"]),
     "Tier 3 Battle: Appetite for Destruction":              BL2ArchiData("TorgueArena", 50, is_non_gear_reward=True, req_rules=["Quest: Long Way To The Top", "Quest: Tier 2 Battle: Appetite for Destruction"]),
     "Tier 3 Rematch: Appetite for Destruction":             BL2ArchiData("TorgueArena", 50, req_rules=["Quest: Long Way To The Top", "Quest: Tier 3 Battle: Appetite for Destruction"]),
     "Pete the Invincible":                                  BL2ArchiData("PyroPetesBar", 30, other_req_regions=["BadassCraterBar"], tags=["raidboss"], is_non_gear_reward=True, req_rules=["Quest: Long Way To The Top"]),

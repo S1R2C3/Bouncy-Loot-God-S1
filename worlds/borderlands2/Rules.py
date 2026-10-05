@@ -116,11 +116,12 @@ def setup_level_rules(world: Borderlands2World):
         )
 
     # setup Lvl 31
-    (lvl_item, lvl_loc) = world.create_event_at(f"Lvl 31", "Menu")
-    lvl_loc.show_in_spoiler = False
-    tog_name = "Quest: The Talon of God"
-    tog_data = location_data_table.get(tog_name)
-    world.try_add_rule("Lvl 31", world.get_rule("Lvl 30") & create_rule_with_alts(world, tog_data, tog_name))
+    if world.options.max_level_checks == 0:
+        (lvl_item, lvl_loc) = world.create_event_at(f"Lvl 31", "Menu")
+        lvl_loc.show_in_spoiler = False
+        tog_name = "Quest: The Talon of God"
+        tog_data = location_data_table.get(tog_name)
+        world.try_add_rule("Lvl 31", world.get_rule("Lvl 30") & create_rule_with_alts(world, tog_data, tog_name))
 
     # alternative override for levels
     for lvl in range(1, 16):

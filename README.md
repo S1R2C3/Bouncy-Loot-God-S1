@@ -19,7 +19,7 @@ For any GitHub Release Page, scroll to the bottom of the release notes to find t
 3. The `.apworld` file goes into `.../Archipelago/custom_worlds/` OR use the `Install APWorld` tool from the Archipelago Launcher OR simply double click the .apworld file. Restart your Archipelago launcher after installing the apworld.
 
 It is recommended when installing the BouncyLootGod mod; to load up the game, make sure it is enabled, and then close the game. This is done to ensure that your run is ready at the start.
-It is then recommended that when you are ready to start up a run; to load up the Borderlands 2 Client through the Archipelago Launcher, connect to your Archipelago Room, and then turn on Borderlands 2. The mod misbehaves if the game is opened with the mod on, before the client is opened and connected to the room.
+It is then recommended that when you are ready to start up a run; to load up the Borderlands 2 Client through the Archipelago Launcher, connect to your Archipelago Room, and then turn on Borderlands 2. The mod misbehaves if the game is opened with the mod on, before the client is opened and connected to the room.  
 More information on [sdk mod setup](https://bl-sdk.github.io/willow2-mod-db/faq/)  
 More information on [apworld](https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/apworld%20specification.md)
 
