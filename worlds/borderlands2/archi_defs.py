@@ -742,7 +742,7 @@ quest_data_table = {
 
     "The Dawn of New Pandora":                              BL2ArchiData("Backburner", 30, other_req_regions=["FFSIntroSanctuary"], is_non_gear_reward=True, tags=["story", "unlocked_remove"]),
     "Spore Chores":                                         BL2ArchiData("DahlAbandon", 30, other_req_regions=["Backburner"], req_items=["Melee"], is_non_gear_reward=True, tags=["story", "unlocked_remove"]),
-    "The Oddest Couple":                                    BL2ArchiData("DahlAbandon", 30, req_items=["Melee", "License: Common Pistol"], is_non_gear_reward=True),
+    "The Oddest Couple":                                    BL2ArchiData("DahlAbandon", 30, other_req_regions=["Backburner"], req_items=["Melee", "License: Common Pistol"], is_non_gear_reward=True),
     "Winging It":                                           BL2ArchiData("DahlAbandon", 30, other_req_regions=["Backburner"], req_rules=["Quest: Spore Chores"], is_non_gear_reward=True, tags=["story", "unlocked_remove"]),
     "The Vaughnguard":                                      BL2ArchiData("DahlAbandon", 30, other_req_regions=["Backburner"], req_rules=["Quest: Spore Chores"], is_non_gear_reward=True),
     "Space Cowboy":                                         BL2ArchiData("DahlAbandon", 30, other_req_regions=["Backburner"], req_rules=["Quest: Spore Chores"], jump_z_req=300),
