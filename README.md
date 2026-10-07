@@ -19,7 +19,7 @@ For any GitHub Release Page, scroll to the bottom of the release notes to find t
 3. The `.apworld` file goes into `.../Archipelago/custom_worlds/` OR use the `Install APWorld` tool from the Archipelago Launcher OR simply double click the .apworld file. Restart your Archipelago launcher after installing the apworld.
 
 It is recommended when installing the BouncyLootGod mod; to load up the game, make sure it is enabled, and then close the game. This is done to ensure that your run is ready at the start.
-It is then recommended that when you are ready to start up a run; to load up the Borderlands 2 Client through the Archipelago Launcher, connect to your Archipelago Room, and then turn on Borderlands 2. The mod misbehaves if the game is opened with the mod on, before the client is opened and connected to the room.
+It is then recommended that when you are ready to start up a run; to load up the Borderlands 2 Client through the Archipelago Launcher, connect to your Archipelago Room, and then turn on Borderlands 2. The mod misbehaves if the game is opened with the mod on, before the client is opened and connected to the room.  
 More information on [sdk mod setup](https://bl-sdk.github.io/willow2-mod-db/faq/)  
 More information on [apworld](https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/apworld%20specification.md)
 
@@ -43,7 +43,9 @@ OR host locally with Archipelago Client > Host (if you know what you're doing)
 ### Running the mod
 Backup your BL2 characters before proceeding! They are located at Documents/my games/Borderlands 2/WillowGame/SaveData/...
 
-With a multiworld running, Open "Borderlands 2 Client" from the Archipelago Launcher (restart the launcher if it's not there), connect to the multiworld. Then open Borderlands 2 and enable the mod.
+1. With a multiworld running, Open "Borderlands 2 Client" from the Archipelago Launcher (restart the launcher if it's not there).
+2. Connect to the multiworld (enter slot name and password if needed).
+3. Open Borderlands 2 and enable the mod.
 
 Double check from the in-game mod menu that coroutines says version 1.1 and "Loaded".
 

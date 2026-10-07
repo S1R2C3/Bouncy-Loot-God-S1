@@ -824,6 +824,10 @@ def on_enable():
         assassin_quest.MissionSummary = "Kill the disguised Hyperion assassins.<br>[place]AP Change[-place]: <font color='#FFFF00'>Repeatable</font>"
         assassin_quest.TeaserText = "Roland needs your help.<br>[place]AP Change[-place]: <font color='#FFFF00'>Repeatable</font>"
 
+        doctors_order_quest = unrealsdk.find_object("MissionDefinition", "GD_Z2_DoctorsOrders.M_DoctorsOrders")
+        doctors_order_quest.bRepeatable = True
+        doctors_order_quest.MissionSummary = "Find slag experiment results.<br>[place]AP Change[-place]: <font color='#FFFF00'>Repeatable</font>"
+        doctors_order_quest.TeaserText = "Horrible, disgusting things happened at [place]Wildlife Exploitation Preserve[-place]. Tannis is super-interested in them.<br>[place]AP Change[-place]: <font color='#FFFF00'>Repeatable</font>"
 
     blg = get_globals()
     start_coroutine_tick(watcher_loop(blg))
@@ -1335,7 +1339,6 @@ def bunker_warrior_spawn_items(obj: unreal.UObject, args: unreal.WrappedStruct, 
 def complete_quit_to_menu(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func: unreal.BoundFunction):
     blg = get_globals()
     blg.current_map = "" # reset, now loading into map will trigger changing areas
-    print("complete_quit_to_menu")
     send_setting = blg.settings.get("death_link_send_mode")
     if send_setting == 2 or send_setting == 3 or send_setting == 4:
         send_deathlink()
@@ -1640,7 +1643,7 @@ def add_chat_message(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func:
         if not player_is_host():
             return
         gameinfo = unrealsdk.find_all("WillowCoopGameInfo")[-1]
-        gameinfo.InitiateTravel(get_pc(), "", None, None, unrealsdk.find_object("Object", travel_targets[map_name]))
+        gameinfo.InitiateTravel(get_pc(), "", None, None, unrealsdk.find_object("TravelStationDefinition", travel_targets[map_name]))
 
 @hook("WillowGame.WillowPickup:EnableRagdollCollision")
 def disable_collision(obj: unreal.UObject, args: unreal.WrappedStruct, ret, func: unreal.BoundFunction):

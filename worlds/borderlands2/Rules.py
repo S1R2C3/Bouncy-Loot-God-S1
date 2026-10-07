@@ -43,6 +43,9 @@ def amt_jump_checks_needed(world, jump_z_req):
 def add_travel_item_rule(world, entrance, region):
     if not region:
         return
+    if world.options.entrance_locks.value == 0:
+        return
+
     t_item_name = region.travel_item_name
     if not t_item_name:
         return
@@ -61,12 +64,16 @@ def add_travel_item_rule(world, entrance, region):
         # print(t_item_name)
         world.try_add_rule(entrance, Has(t_item_name))
 
+def setup_combat_rules(world: Borderlands2World):
+    # TODO: make customizable from settings
+    world.try_add_rule("Ranged Combat", Has("License: Common Pistol"))
+
 def setup_level_rules(world: Borderlands2World):
     if world.options.always_on_level.value in (1, 2):
         # hold this list for later
         can_reach_rules = [CanReachRegion(r) for r in region_data_table.keys()]
 
-    for lvl in range(1, 32): # 1 to 31
+    for lvl in range(1, 31): # 1 to 30
         rule = False_()
 
         # require one region within farming range
@@ -103,7 +110,18 @@ def setup_level_rules(world: Borderlands2World):
         # require basic combat to surpass level 0
         world.try_add_rule("Lvl 1", HasAny("Melee", "License: Common Pistol"))
         # require reasonable loadout to surpass level 9
-        world.try_add_rule("Lvl 10", HasAll("Melee", "License: Common Pistol", "License: Common Shield", "License: Common Shotgun", "License: Uncommon Pistol"))
+        world.try_add_rule("Lvl 10",
+            world.get_rule("Ranged Combat")
+            & HasAll("Melee", "License: Common Shield")
+        )
+
+    # setup Lvl 31
+    if world.options.max_level_checks == 0:
+        (lvl_item, lvl_loc) = world.create_event_at(f"Lvl 31", "Menu")
+        lvl_loc.show_in_spoiler = False
+        tog_name = "Quest: The Talon of God"
+        tog_data = location_data_table.get(tog_name)
+        world.try_add_rule("Lvl 31", world.get_rule("Lvl 30") & create_rule_with_alts(world, tog_data, tog_name))
 
     # alternative override for levels
     for lvl in range(1, 16):
@@ -137,22 +155,26 @@ def setup_custom_rules(world: Borderlands2World):
         # | create_rule(world, BL2ArchiData("FlamerockRefuge", 30), "") # tina slot machine (insane currently)
     )
 
-def create_rule_with_alts(world: Borderlands2World, location_data: BL2ArchiData, location_name: str, force_included_quest=False):
+    # for TVHM+, the best we can do for now is detect being able to beat normal mode. This rule won't be skipped by AOL or FUM
+    world.try_add_rule("TVHM", world.get_rule("Lvl 31"))
+    world.try_add_rule("UVHM", world.get_rule("Lvl 31"))
+
+def create_rule_with_alts(world: Borderlands2World, location_data: BL2ArchiData, location_name: str):
     rule = create_rule(world, location_data, location_name)
     if location_data.alternates:
         for alt_data in location_data.alternates:
             # if alt_data.region in world.restricted_regions:
             #     # skip if in a restricted region
             #     continue
-            alt_rule = create_rule(world, alt_data, location_name, force_included_quest)
+            alt_rule = create_rule(world, alt_data, location_name)
             rule = rule | alt_rule
     return rule
 
 # creates a rule for a location, ignores location_data.alternates
-def create_rule(world: Borderlands2World, location_data: BL2ArchiData, location_name: str, force_included_quest=False):
+def create_rule(world: Borderlands2World, location_data: BL2ArchiData, location_name: str):
     rule = True_()
 
-    if not world.is_location_alt_included(location_data, location_name, force_included_quest):
+    if not world.is_location_alt_included(location_data):
         # mark this alternate impossible
         return False_()
 
@@ -204,7 +226,7 @@ def create_rule(world: Borderlands2World, location_data: BL2ArchiData, location_
                 extra_rule = True_()
             if extra_rule is None:
                 # it either appears further down the list or was excluded
-                extra_rule = create_rule_with_alts(world, rule_location_data, rule_name, force_included_quest=True)
+                extra_rule = create_rule_with_alts(world, rule_location_data, rule_name)
 
         rule = rule & extra_rule
 
@@ -223,6 +245,7 @@ def create_rule(world: Borderlands2World, location_data: BL2ArchiData, location_
 
 
 def set_world_rules(world: Borderlands2World):
+    setup_combat_rules(world)
     setup_level_rules(world)
     setup_custom_rules(world)
     # items must be classified as progression to use in rules here
@@ -265,8 +288,9 @@ def set_world_rules(world: Borderlands2World):
                         #     world.multiworld.register_indirect_condition(req_region, entrance)
     # misc. region rules
 
-    # challenge requires 10,000
-    world.try_add_rule(world.try_get_location("Challenge Money: For the Hoard!"), Has("Progressive Money Cap", 2))
+    # challenge requires at least some amount of money
+    world.try_add_rule(world.try_get_location("Challenge Money: For the Hoard!"), Has("Progressive Money Cap", 2)) #requires 10,000
+    world.try_add_rule(world.try_get_location("Challenge Backburner: Fandir Fiction"), Has ("Progressive Money Cap", 3)) #requires over 125,000
 
     # SouthernShelf access requires combat
     if world.options.gear_licenses.value > 0:
@@ -275,13 +299,25 @@ def set_world_rules(world: Borderlands2World):
     # expect player to have access to Backburner before starting FFS
     add_travel_item_rule(world, world.try_get_entrance("Menu to FFSIntroSanctuary"), region_data_table["Backburner"])
 
-    # need melee to get Mordecai blood sample before entering Mt. Scarab Research Center
-    world.try_add_rule(world.try_get_entrance("DahlAbandon to Mt.ScarabResearchCenter"), Has("Melee"))
+    # need melee to give the scanner a bandit high-five before entering Burrows
+    world.try_add_rule(world.try_get_entrance("DahlAbandon to Burrows"), Has("Melee"))
+
+    # need melee to explode douchey bar patron before entering The Forest
+    world.try_add_rule(world.try_get_entrance("FlamerockRefuge to Forest"), Has("Melee"))
 
     # need to shoot the bridge halfway through CandlerakksCrag
     if world.options.gear_licenses.value > 0:
-        world.try_add_rule(world.try_get_entrance("HuntersGrotto to CandlerakksCrag"), Has("License: Common Pistol"))
-        world.try_add_rule(world.try_get_entrance("Menu to CandlerakksCrag"), Has("License: Common Pistol"))
+        world.try_add_rule(world.try_get_entrance("HuntersGrotto to CandlerakksCrag"), world.get_rule("Ranged Combat"))
+        world.try_add_rule(world.try_get_entrance("Menu to CandlerakksCrag"), world.get_rule("Ranged Combat"))
+
+        # need to shoot the lock off Herbert's chest before entering Washburne
+        world.try_add_rule(world.try_get_entrance("Wurmwater to WashburneRefinery"), world.get_rule("Ranged Combat"))
+
+        # need to shoot to take down BNK-3R and enter Control Core Angel
+        world.try_add_rule(world.try_get_entrance("Bunker to ControlCoreAngel"), world.get_rule("Ranged Combat"))
+
+        # need to shoot to defeat autocannons outside Helios Fallen
+        world.try_add_rule(world.try_get_entrance("Burrows to HeliosFallen"), world.get_rule("Ranged Combat"))
 
     # Terminus requires crouching through a tunnel. technically there are vending machines before the tunnel, but not gonna worry about it.
     world.try_add_rule(world.try_get_entrance("CandlerakksCrag to Terminus"), Has("Crouch"))
